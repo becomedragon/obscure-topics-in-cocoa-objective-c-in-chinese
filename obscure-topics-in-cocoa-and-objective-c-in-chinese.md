@@ -87,3 +87,59 @@ NSNull被用在很多的底层框架和其他的系统框架中，例如在NSArr
 * NSNull，数值为： [NSNull null]  是OC中一个表示null的单例类。
 
 #BOOL/bool/Boolean/NSCFBoolean
+Truth是可以独立存在的，还是偶然发生的？是否存在一个命题既是truth又是false？
+
+我们又再一次的将这个充满逻辑的世界用字节码表示出来，以此来解决我们遇到的问题。我们来讨论一下在C&OC语言中，truth是一个什么。
+
+OC用BOOL来声明truth数值。它是一个被宏定义成YES和NO的char类型变量，分别用来分别表示truth和false。
+
+Boolean数值常被用在条件语句中，例如if或者while语句中。当用在条件语句中，0是被当做false来处理，除此之外的其它数值被当做true。因为NULL和nil都有一个0数值，所以他们被当做fase来对待。
+
+在OC中，BOOL类型被用作参数，属性和类变量来处理truth数值。当要赋值给BOOL类型时，用YES和NO宏定义来赋值。
+
+###错误的答案和错误的问题
+初级程序员经常将条件等式写成下面这种形式：
+
+    if ([a isEqual:b] == YES) { ... }
+上面这种写法非但看上去是多余的，而且左边的等式还可能会出现一些意想不到的结果。考虑下面的这个函数，用来返回判断两个数值是否相等：
+
+     static BOOL different (int a, int b) {           return a - b;     }
+上面的方法用了一种比较聪明且简单的方法，确实，当且仅当两个数值相等时，他们的差为0。
+
+不管怎样，BOOL在32位架构上被定义成一个单字符的变量，它们的运行不会是预期的那样：
+
+     different(11, 10) // YES     different(10, 11) // NO (!)     different(512, 256) // NO (!)
+这对于JavaScript是可行的，但是对于OC却不行。
+
+    在64位的架构上，BOOL被定义成bool类型而不是单字节类型，这样可以避免在运行期间导致的类型转换错误。
+    
+利用数学操作符来进行truth数值的操作绝对不是一个好方法：使用==操作符，或者用！操作符来转换boolean数值。
+
+###关于NSNumber和BOOL中的Truth数值
+一个小测验：下面的表达式输出的结果是：
+
+NSLog(@"%@",[@(YES) class]);
+
+答案是：__NSFBoolean
+
+为什么呢？
+
+我们都知道NSNumber可以封装任何类型的基元数值，并以对象的形式表现出来。任何来自原NSNumber对象封装的整形或者浮点型变量，它们的类型都是__NSCFNumber类型的。
+
+NSCFBoolean是属于NSNumber类簇中的一个私有类。它和Core Fundation框架中的CFBooleanRef是桥接类型，该类型常被用来封装Core Fundation中集合类和属性列表中的boolean数值。CFBoolean定义了kCFBooleanTrue和kCFBooleanFalse这两个常量。因为CFNumberRef和CFBooleanRef在Core Fundation中是两个不同的类型，这也就能解释了为什么NSNumber类分别代表了两个不同的桥接类。
+
+
+下面是在OC中表示的truth类型和truth数值。
+
+    NAME       Type         Header      True      False
+  
+    BOOL   signed char      objc.h       YES        NO
+
+    bool   _Bool(int)       stdbool.h    TRUE     FALSE
+
+    Boolean  unsigned char  MacType.h    TRUE     FALSE
+
+    NSNumber __NSCFBoolean  Fundation.h  @(YES)   @(NO)
+ 
+ 
+
