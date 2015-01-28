@@ -81,10 +81,13 @@ NSNull被用在很多的底层框架和其他的系统框架中，例如在NSArr
      NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionary];    !     mutableDictionary[@"someKey"] = [NSNull null];   // Sets value of NSNull singleton for `someKey` !    NSLog(@"Keys: %@", [mutableDictionary allKeys]);   // @[@"someKey"]
 下面将总结四种在OC中用来表示“空”的标识：
 
-* NULL，  数值为： (void*)0，     在c语言中表示指针为空。
-* nil ，  数值为： (id)0，        表示OC中的某一个对象指向空。
-* Nil ，  数值为： (Class）0，    表示OC中的某一个类为空。
-* NSNull，数值为： [NSNull null]  是OC中一个表示null的单例类。
+关键字 | 实际类型 | 说明
+------|--------|-----
+NULL | (void*)0 | 在c语言中表示指针为空。
+nil  |(id)0 |表示OC中的某一个对象指向空。
+Nil  |(Class）0 | 表示OC中的某一个类为空。
+NSNull | [NSNull null] | 是OC中一个表示null的单例类。
+
 
 #BOOL/bool/Boolean/NSCFBoolean
 Truth是可以独立存在的，还是偶然发生的？是否存在一个命题既是truth又是false？
@@ -131,15 +134,13 @@ NSCFBoolean是属于NSNumber类簇中的一个私有类。它和Core Fundation�
 
 下面是在OC中表示的truth类型和truth数值。
 
-    NAME       Type         Header      True      False
-  
-    BOOL   signed char      objc.h       YES        NO
-
-    bool   _Bool(int)       stdbool.h    TRUE     FALSE
-
-    Boolean  unsigned char  MacType.h    TRUE     FALSE
-
-    NSNumber __NSCFBoolean  Fundation.h  @(YES)   @(NO)
+  NAME  |     Type    |     Header   |   True   |   False
+    -----|-----|-----|-----|-----
+  BOOL|   signed char   |   objc.h    |   YES   |     NO
+bool |  _Bool(int)    |   stdbool.h   | TRUE    | FALSE
+  Boolean | unsigned char| MacType.h  |  TRUE  |   FALSE
+  NSNumber| __NSCFBoolean | Fundation.h | @(YES)  | @(NO)
  
+
  
 
