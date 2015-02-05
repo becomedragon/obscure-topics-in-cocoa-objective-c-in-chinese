@@ -17,34 +17,80 @@ Object－C
 一个良好的习惯应该从#pragma mark开始：
 
 @implementation ViewController - (id)init {
-...
-  }
-  ＃pragma mark - UIViewController - (void)viewDidLoad {
-...
-  }
-  ＃pragma mark - IBAction
-- (IBAction)cancel:(id)sender {
- ...
-  }
-  ＃pragma mark - UITableViewDataSource
-- (NSInteger)tableView:(UITableView *)tableView 
-numberOfRowsInSection:(NSInteger)section 
- {
- }
-＃pragma mark - UITableViewDelegate
-- (void)tableView:(UITableView *)tableView 
-didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
- ...
-  }
-  在@implementation中使用#pragma mark能够将代码按照逻进行划分。该声明不但能让代码本身更加易于阅读，还能在Xcode的导航中表现出来。
-  按照方法的实现类别可以将多个同属一类的方法看成是一个组。例如一个NSInputStream的子类可以看做是同属NSInputStream组的。
-像是IBAction outlets，或者target/action,notification,KVO这几类的代码都可以归为各自的组别，将他们划分为不同的组。
-如果一个类要实现某一个@protocol，则可以将该@protocol中的方法划分为一组，用#pragma mark进行标识。
-###警告控制
-比糟糕的代码风格更让人讨厌的是代码编译后所产生的各种警告，特别是第三方提供的代码。如果你看到某一个第三方代码编译之后产生了200+个警告，我想你一定会疯掉。
-但是在某些情况下，没有办法避免警告的出现。使用早期版本的API和代码中可能会出现的循环引用都是让编译器提示警告，这两个情况也是非常常见的。在这时你是非常希望编译器不要将这些警告提示出来，#pragma就能起到屏蔽这些警告的作用：
-   
-    #pragma clang diagnostic push    #pragma clang diagnostic ignored "-Wunused-variable"    OSStatus status = SecItemExport(...);    NSCAssert(status == errSecSuccess, @"%d", status);    #pragma clang diagnostic pop
+
+...
+
+  }
+
+  
+＃pragma mark - UIViewController - (void)viewDidLoad {
+
+
+...
+
+  }
+
+  
+＃pragma mark - IBAction
+
+
+- (IBAction)cancel:(id)sender {
+
+ 
+...
+
+  }
+
+  
+＃pragma mark - UITableViewDataSource
+
+
+- (NSInteger)tableView:(UITableView *)tableView 
+
+numberOfRowsInSection:(NSInteger)section 
+
+ 
+{
+
+ 
+}
+
+
+＃pragma mark - UITableViewDelegate
+
+
+- (void)tableView:(UITableView *)tableView 
+
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+
+ 
+...
+
+  }
+
+  在@implementation中使用#pragma mark能够将代码按照逻进行划分。该声明不但能让代码本身更加易于阅读，还能在Xcode的导航中表现出来。
+
+  按照方法的实现类别可以将多个同属一类的方法看成是一个组。例如一个NSInputStream的子类可以看做是同属NSInputStream组的。
+
+像是IBAction outlets，或者target/action,notification,KVO这几类的代码都可以归为各自的组别，将他们划分为不同的组。
+
+如果一个类要实现某一个@protocol，则可以将该@protocol中的方法划分为一组，用#pragma mark进行标识。
+
+
+###警告控制
+
+比糟糕的代码风格更让人讨厌的是代码编译后所产生的各种警告，特别是第三方提供的代码。如果你看到某一个第三方代码编译之后产生了200+个警告，我想你一定会疯掉。
+
+
+但是在某些情况下，没有办法避免警告的出现。使用早期版本的API和代码中可能会出现的循环引用都是让编译器提示警告，这两个情况也是非常常见的。在这时你是非常希望编译器不要将这些警告提示出来，#pragma就能起到屏蔽这些警告的作用：
+
+   
+
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wunused-variable"
+    OSStatus status = SecItemExport(...);
+    NSCAssert(status == errSecSuccess, @"%d", status);
+    #pragma clang diagnostic pop
 上面的代码是一些常用的用来屏蔽不可避免发生警告的例子。在release模式下，assertion代码会被编译器忽略，这时status变量就会产生unused variable警告，此时我们加上了#pragma clang diagnostic ignored "-Wunused-variable"这句声明就会让编译器屏蔽该警告。
 
 使用#pragma clang diagnostic push/pop声明，是告诉编译器警告控制所作用的区域。
@@ -73,12 +119,22 @@ OC在C的基础上增加了nil来表示“空”。nil表示一个对象为空�
 这在其他语言中已经会引起crash，例如在c++中，像null发送消息就一定会引起crash，但是在OC中nil调用一个方法会返回0.这种特性将有助于简化代码的编写，在让一个对象调用方法之前不需要在对该对象做判断空的处理：
 
 
-     // For example, this expression...      if (name != nil && [name isEqualToString:@"Steve"])   { ... }     !     // ...can be simplified to:      if ([name isEqualToString:@"steve"]) { ... }
+     // For example, this expression... 
+     if (name != nil && [name isEqualToString:@"Steve"])   { ... }
+     !
+     // ...can be simplified to: 
+     if ([name isEqualToString:@"steve"]) { ... }
 在了解了nil这个特性之后，在给编码代码带来便利性的同时也要注意这种特性也会让bug更加难以的查出。
 
 ###NSNull：用来表示“空”的类
-NSNull被用在很多的底层框架和其他的系统框架中，例如在NSArray和NSDictionary这种结合类中使用NSNull可以避开不能使用nil的限制。NSNull可以有效的将NULL或者nil封装成一个对象，这样nil就能被当做对象处理存储到集合类中。
-     NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionary];    !     mutableDictionary[@"someKey"] = [NSNull null];   // Sets value of NSNull singleton for `someKey` !    NSLog(@"Keys: %@", [mutableDictionary allKeys]);   // @[@"someKey"]
+NSNull被用在很多的底层框架和其他的系统框架中，例如在NSArray和NSDictionary这种结合类中使用NSNull可以避开不能使用nil的限制。
+NSNull可以有效的将NULL或者nil封装成一个对象，这样nil就能被当做对象处理存储到集合类中。
+
+
+     NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionary];
+    !
+     mutableDictionary[@"someKey"] = [NSNull null];   // Sets value of NSNull singleton for `someKey` !
+    NSLog(@"Keys: %@", [mutableDictionary allKeys]);   // @[@"someKey"]
 下面将总结四种在OC中用来表示“空”的标识：
 
 关键字 | 实际类型 | 说明
@@ -106,12 +162,16 @@ Boolean数值常被用在条件语句中，例如if或者while语句中。当用
     if ([a isEqual:b] == YES) { ... }
 上面这种写法非但看上去是多余的，而且左边的等式还可能会出现一些意想不到的结果。考虑下面的这个函数，用来返回判断两个数值是否相等：
 
-     static BOOL different (int a, int b) {           return a - b;     }
+     static BOOL different (int a, int b) {
+           return a - b;
+     }
 上面的方法用了一种比较聪明且简单的方法，确实，当且仅当两个数值相等时，他们的差为0。
 
 不管怎样，BOOL在32位架构上被定义成一个单字符的变量，它们的运行不会是预期的那样：
 
-     different(11, 10) // YES     different(10, 11) // NO (!)     different(512, 256) // NO (!)
+     different(11, 10) // YES
+     different(10, 11) // NO (!)
+     different(512, 256) // NO (!)
 这对于JavaScript是可行的，但是对于OC却不行。
 
     在64位的架构上，BOOL被定义成bool类型而不是单字节类型，这样可以避免在运行期间导致的类型转换错误。
